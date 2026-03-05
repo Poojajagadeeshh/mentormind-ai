@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MentorMind AI</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+        }
+
+        #authSection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .auth-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .auth-box h2 {
+            text-align: center;
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        #authMessage {
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- LOGIN SECTION -->
+<div id="authSection">
+    <div class="auth-box">
+        <h2>Login</h2>
+
+        <input id="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Password">
+
+        <button id="loginBtn">Login</button>
+        <button id="registerBtn">Register</button>
+
+        <p id="authMessage"></p>
+    </div>
+</div>
+
+<!-- IMPORTANT: SCRIPT AT BOTTOM -->
+<script src="script.js"></script>
+
+</body>
+</html>
