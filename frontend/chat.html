@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>MentorMind AI Chat</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#121212;
+display:flex;
+height:100vh;
+color:white;
+overflow:hidden;
+}
+
+/* Sidebar */
+.sidebar{
+width:260px;
+background:#0f0f0f;
+padding:20px;
+display:flex;
+flex-direction:column;
+}
+
+.sidebar h2{
+margin-bottom:20px;
+}
+
+.new-chat{
+background:#1e73ff;
+border:none;
+color:white;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+.chat-list{
+flex:1;
+overflow:auto;
+}
+
+.chat-item{
+padding:10px;
+background:#222;
+margin-bottom:8px;
+border-radius:5px;
+cursor:pointer;
+display:flex;
+justify-content:space-between;
+}
+
+/* Chat area */
+
+.chat-area{
+flex:1;
+display:flex;
+flex-direction:column;
+background:#121212;
+}
+
+.header{
+background:black;
+color:white;
+padding:18px;
+font-size:18px;
+font-weight:bold;
+border-bottom:1px solid #333;
+}
+
+.message{
+max-width:65%;
+padding:12px 16px;
+border-radius:16px;
+line-height:1.5;
+}
+
+.messages{
+flex:1;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:16px;
+padding:40px;
+max-width:900px;
+width:100%;
+margin-left:auto;
+margin-right:auto;
+}
+
+.user{
+align-self:flex-end;
+background:#2a2a2a;
+}
+
+.assistant{
+align-self:flex-start;
+background:#1f1f1f;
+}
+
+.input-area{
+display:flex;
+padding:15px;
+background:white;
+border-top:1px solid #ddd;
+}
+
+input{
+flex:1;
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button.send{
+margin-left:10px;
+background:#1e73ff;
+border:none;
+color:white;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.avatar{
+width:34px;
+height:34px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:16px;
+margin-right:8px;
+background:#333;
+}
+
+.message-row{
+display:flex;
+align-items:flex-start;
+gap:8px;
+}
+
+.user-row{
+justify-content:flex-end;
+}
+
+.copy-btn{
+margin-left:10px;
+background:none;
+border:none;
+color:#aaa;
+cursor:pointer;
+font-size:12px;
+}
+
+.copy-btn:hover{
+color:white;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+
+<h2>Chats</h2>
+
+<button class="new-chat" onclick="createChat()">+ New Chat</button>
+<button class="new-chat" onclick="exportPDF()">Export Chat</button>
+
+<div id="chatList" class="chat-list"></div>
+
+</div> <!-- IMPORTANT: sidebar CLOSED here -->
+
+
+<!-- Chat Area -->
+<div class="chat-area">
+
+<div class="header">
+MentorMind AI
+</div>
+
+<div id="messages" class="messages"></div>
+
+<div class="input-area">
+<input id="messageInput" placeholder="Ask something...">
+<button class="send" onclick="sendMessage()">Send</button>
+</div>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="chat.js"></script>
+
+</body>
+</html>

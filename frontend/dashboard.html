@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>MentorMind Dashboard</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:white;
+    width:420px;
+    text-align:center;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+h1{
+    color:black;
+    margin-bottom:10px;
+}
+
+p{
+    color:#555;
+    margin-bottom:30px;
+}
+
+.line{
+    width:60px;
+    height:4px;
+    background:#007BFF;
+    margin:10px auto 25px auto;
+    border-radius:5px;
+}
+
+.button-group{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+button{
+    background:#007BFF;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#0056b3;
+}
+
+.logout{
+    background:#444;
+}
+
+.logout:hover{
+    background:#222;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>MentorMind AI 🎓</h1>
+
+<div class="line"></div>
+
+<p>You are logged in successfully.</p>
+
+<div class="button-group">
+    <button onclick="openChat()">Open Chat</button>
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+<script>
+
+/* Protect dashboard if not logged in */
+const token = localStorage.getItem("token");
+
+if(!token){
+    window.location.href="index.html";
+}
+
+/* Open chat session */
+function openChat(){
+    window.location.href="chat.html";
+}
+
+/* Logout */
+function logout(){
+    localStorage.removeItem("token");
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>

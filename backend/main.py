@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from groq import Groq
-from datetime import datetime
 import os
 
 # Local imports
@@ -23,7 +24,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# Create tables
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
 # Enable CORS
@@ -35,7 +36,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load AI client
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+# =========================
+# SERVE FRONTEND
+# =========================
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+frontend_path = os.path.join(BASE_DIR, "frontend")
+
+app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
+
+@app.get("/")
+def home():
+    return FileResponse(os.path.join(frontend_path, "index.html"))
 
 # =========================
 # REQUEST SCHEMAS
@@ -47,6 +62,9 @@ class RegisterRequest(BaseModel):
 
 class AskRequest(BaseModel):
     message: str
+
+class RenameRequest(BaseModel):
+    title: str
 
 
 # =========================
@@ -135,86 +153,29 @@ def get_my_chats(
     return db.query(Chat).filter(Chat.user_id == current_user.id).all()
 
 
-@app.get("/chat/{chat_id}")
-def get_chat_messages(
-    chat_id: int,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-
-    if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found")
-
-    return chat.messages
-
+# =========================
+# AI CHAT (NO LOGIN REQUIRED FOR DEMO)
+# =========================
 
 @app.post("/ask/{chat_id}")
-def ask(
-    chat_id: int,
-    request: AskRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
+def ask(chat_id: int, request: AskRequest):
 
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-
-    if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found")
-
-    # Save user message
-    user_msg = Message(
-        chat_id=chat.id,
-        role="user",
-        content=request.message,
-        timestamp=datetime.utcnow()
-    )
-    db.add(user_msg)
-    db.commit()
-
-    # 🔥 Fetch last 10 messages for context
-    previous_messages = db.query(Message).filter(
-        Message.chat_id == chat.id
-    ).order_by(Message.timestamp).all()
-
-    messages_for_ai = [
-        {"role": "system", "content": "You are a helpful AI tutor."}
-    ]
-
-    for msg in previous_messages[-10:]:
-        messages_for_ai.append({
-            "role": msg.role,
-            "content": msg.content
-        })
-
-    # Generate AI response
     completion = client.chat.completions.create(
         model="llama-3.1-8b-instant",
-        messages=messages_for_ai
+        messages=[
+            {"role": "system", "content": "You are a helpful AI tutor."},
+            {"role": "user", "content": request.message}
+        ]
     )
 
     ai_response = completion.choices[0].message.content
 
-    # Save AI message
-    ai_msg = Message(
-        chat_id=chat.id,
-        role="assistant",
-        content=ai_response,
-        timestamp=datetime.utcnow()
-    )
-
-    db.add(ai_msg)
-    db.commit()
-
     return {"answer": ai_response}
 
+
+# =========================
+# DELETE CHAT
+# =========================
 
 @app.delete("/delete-chat/{chat_id}")
 def delete_chat(
@@ -237,10 +198,14 @@ def delete_chat(
     return {"message": "Chat deleted successfully"}
 
 
+# =========================
+# RENAME CHAT
+# =========================
+
 @app.put("/rename-chat/{chat_id}")
 def rename_chat(
     chat_id: int,
-    title: str,
+    request: RenameRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -253,7 +218,7 @@ def rename_chat(
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
-    chat.title = title
+    chat.title = request.title
     db.commit()
 
     return {"message": "Chat renamed successfully"}
